@@ -1,9 +1,9 @@
 - module(recap).
-- export ([perimeter/1, area/1, enclosing/1]).
+- export ([perimeter/1, area/1, enclosing/1, bits/1, bitsd/1]).
 
-perimeter({circle, {_X,_Y}, R}) % shape circle, the centre, radius
+perimeter({circle, _, R}) % shape circle, the centre, radius
     -> R*2*math:pi();
-perimeter({rectangle, {_X,_Y}, H, W}) % shape rectangle, the centre, height, width
+perimeter({rectangle, _, H, W}) % shape rectangle, the centre, height, width
     -> (H+W)*2;
 perimeter({triangle, {X,Y}, {Q,W}, {Z,E}}) % shape triangle, tops of triangle
     -> {A,B,C} = sides({X,Y}, {Q,W}, {Z,E}),
@@ -47,3 +47,16 @@ maxThree(X,Y,Z) ->
 minThree(X,Y,Z) ->
     A = min(X,Y),
     min(A,Z).
+
+%% tail recursion
+bits(0,S) -> S;
+bits(N,S) ->
+    bits(N div 2, S + N rem 2).
+
+bits(N) -> bits (N,0).
+
+%% direct recursion
+
+bitsd(0) -> 0; 
+bitsd(N) when N > 0 -> 
+N rem 2 + bitsd(N div 2).
