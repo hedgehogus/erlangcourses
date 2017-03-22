@@ -1,5 +1,5 @@
 - module(tail_recursion).
-- export([fac/1, loop/1, fib/1, perf/1, perfect/3]).
+- export([fac/1, loop/1, fib/1, perf/1, perfect/1, fibo/1]).
 
 fac(N) -> fac(N,1).
 
@@ -28,10 +28,21 @@ perf(N,S,A) when (A rem (N-1)) == 0 ->
 perf(N,S,A) ->
     perf (N-1, S, A).
 
-perfect(N,N,S) -> N==S;
+perfect(N,N,N) -> true;
+perfect(N,N,_) -> false;
 perfect(N,M,S) when N rem M == 0 ->
     perfect(N,M+1,S+M);
 perfect(N,M,S) ->
     perfect(N, M+1,S).
 
 perfect(N)-> perfect(N,1,0).
+
+fibP(0) ->
+    {0,1};
+fibP(N) ->
+    {P,C} = fibP(N-1),
+    {C,P+C}.
+
+fibo(N) ->
+    {P, _} = fibP(N),
+    P.
