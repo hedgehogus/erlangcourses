@@ -1,5 +1,5 @@
 - module (constructing_lists).
-- export([double/1, even/1, median/1, sort/1]).
+- export([double/1, even/1, median/1, sort/1, mode/1]).
 
 % function to double the elements of a list of numbers
 double([]) -> [];
@@ -39,6 +39,30 @@ sortloop ([X,Y|Xs]) when X > Y ->
 sortloop ([X,Y|Xs]) ->
     [X| sortloop([Y|Xs])].
 
+
+% returns list consisting of the numbers that occur most frequently in the list
+
+mode(Xs) -> 
+   A = frequency(sort(Xs), 1),
+   B = max(A),
+   getelements(A, B).
+
+frequency([X], N) ->[{X,N}];
+frequency([X,Y|Xs],N) ->
+    case X of
+        Y -> frequency([Y|Xs], N+1);
+        _ -> [{X,N}| frequency([Y|Xs], 1)]
+    end.
+
+max([{_,F}]) -> F;
+max([{_,F}|Xs]) -> max (F, max(Xs)).
+
+getelements([], _) -> [];
+getelements([{X,F}|Xs], A) ->
+    case F of 
+        A -> [X | getelements(Xs,A)];
+        _ -> getelements(Xs, A)
+    end.
 
 
     
