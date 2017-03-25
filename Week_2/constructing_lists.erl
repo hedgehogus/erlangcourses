@@ -64,5 +64,3 @@ getelements([{X,F}|Xs], A) ->
         _ -> getelements(Xs, A)
     end.
 
-
-    
