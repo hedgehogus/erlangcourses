@@ -1,5 +1,5 @@
 - module (solving).
-- export([take/2, take1/2, split/2]).
+- export([take/2, take1/2, split/2, nub/1]).
 
 
 %% takes the first N elements from a list
@@ -28,3 +28,9 @@ split(N, [H|T], R) ->
     split (N-1, T, [H|R]);
 split(_, [], _) ->
     badarg.
+
+nub([]) -> [];
+nub (X|Xs) ->
+    [X| nub(nub(Xs),X).
+
+nub ([X|Xs],Y)
