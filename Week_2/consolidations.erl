@@ -1,5 +1,5 @@
 - module (consolidations).
-- export([join/2, concat/1, member/2,  merge_sort/1, quicksort/1, insertionsort/1, insert/2]).
+- export([join/2, concat/1, member/2,  merge_sort/1, quicksort/1, insertionsort/1, perms/1,  per/3, plusfirst/2, eachper/1]).
 
 
 join([],Ys) -> Ys;
@@ -58,5 +58,22 @@ insert([X|Xs], A) ->
     true -> [A|[X|Xs]];
     false -> [X| insert(Xs, A)]
     end.
+    
+% A permutation of a list xs consists of the same elements in a (potentially) different order. 
+perms(Xs) -> lists:reverse(perm(Xs)).
 
+perm([X]) -> [[X]];
+perm([X|Xs]) ->
+    eachper(plusfirst(X,perm(Xs))).    
 
+eachper([]) -> [];     
+eachper([X|Xs]) ->
+    per(X,[],length(X)) ++ eachper(Xs).
+
+per(_,A,0) -> A;
+per([X|Xs],A,L) ->    
+    per(Xs++[X], [[X|Xs]|A], L-1).
+
+plusfirst(A,[]) -> [];
+plusfirst(A,[X|Xs]) ->
+    [[A] ++ X| plusfirst(A,Xs)].
