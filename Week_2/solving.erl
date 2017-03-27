@@ -1,5 +1,5 @@
 - module (solving).
-- export([take/2, take1/2, split/2, nub/1, nubb/1, nub1/1, nub2/1, palindrome/1]).
+- export([take/2, take1/2, split/2, nub/1, nubb/1, nub1/1, nub2/1, palindrome/1, nocaps/1, nopunct/1]).
 
 
 %% takes the first N elements from a list
@@ -71,26 +71,41 @@ member(X, [_|Xs]) ->
 % returns true or false depending on whether the list is a palindrome
 
 palindrome(Xs) ->
-    F = remove_spase(string:to_lower(Xs)),
-    N = lengthl(F) div 2,
-    {A,B} = split(N, F),
-    equals(A, lists:reverse(B)).
+    F = trans(Xs),     
+    F == reverse(F).
 
-equals([], []) -> true;
-equals([],[X]) -> true;
-equals ([X|Xs], [X|Ys]) ->
-    equals(Xs, Ys);
-equals ([X|_], [Y|_]) -> false.
+% combines nopunct & nocaps functions 
+trans([]) -> [];
+trans([X|Xs]) ->
+    case lists:member(X,".,\':;\" \t\n") of
+    true -> trans(Xs);
+    false -> [nocap(X)| trans(Xs)]
+    end.
 
-remove_spase([]) -> [];
-remove_spase([32|Xs]) ->
-    remove_spase(Xs);
-remove_spase([39|Xs]) ->
-    remove_spase(Xs);
-remove_spase([X|Xs])->
-    [X |remove_spase(Xs)].
+% removes punctuation
+nopunct([]) -> [];
+nopunct([X|Xs]) ->
+    case lists:member(X,".,\':;\" \t\n") of
+    true -> nopunct(Xs);
+    false -> [X| nopunct(Xs)]
+    end.
 
-% counts number of elements in list
-lengthl([]) -> 0;
-lengthl([_X| Xs]) ->
-    1 + lengthl(Xs).
+% transforms all capital letter
+nocaps([]) -> [];
+nocaps([X|Xs]) ->
+    [nocap(X)| nocaps(Xs)].
+
+nocap(X) ->
+    case $A =< X andalso X =< $Z of
+        true ->
+            X + 32;
+        false ->
+            X
+    end.
+
+reverse (Xs) -> shunt(Xs, []).
+
+shunt([], Ys) -> Ys;
+shunt([X|Xs], Ys) ->
+    shunt(Xs, [X|Ys]).
+
