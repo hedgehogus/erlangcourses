@@ -1,5 +1,5 @@
 - module (solving).
-- export([take/2, take1/2, split/2, nub/1, nubb/1, nub1/1, nub2/1]).
+- export([take/2, take1/2, split/2, nub/1, nubb/1, nub1/1, nub2/1, palindrome/1]).
 
 
 %% takes the first N elements from a list
@@ -67,3 +67,30 @@ member(_, []) -> false;
 member(X,[X|_]) -> true;
 member(X, [_|Xs]) ->
     member(X,Xs).
+
+% returns true or false depending on whether the list is a palindrome
+
+palindrome(Xs) ->
+    F = remove_spase(string:to_lower(Xs)),
+    N = lengthl(F) div 2,
+    {A,B} = split(N, F),
+    equals(A, lists:reverse(B)).
+
+equals([], []) -> true;
+equals([],[X]) -> true;
+equals ([X|Xs], [X|Ys]) ->
+    equals(Xs, Ys);
+equals ([X|_], [Y|_]) -> false.
+
+remove_spase([]) -> [];
+remove_spase([32|Xs]) ->
+    remove_spase(Xs);
+remove_spase([39|Xs]) ->
+    remove_spase(Xs);
+remove_spase([X|Xs])->
+    [X |remove_spase(Xs)].
+
+% counts number of elements in list
+lengthl([]) -> 0;
+lengthl([_X| Xs]) ->
+    1 + lengthl(Xs).
