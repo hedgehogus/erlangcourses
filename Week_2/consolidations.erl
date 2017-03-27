@@ -1,28 +1,28 @@
 - module (consolidations).
-- export([join/2, concat/1, member/2,  spl/1, merge/2]).
+- export([join/2, concat/1, member/2,  merge_sort/1, merge/2, quicksort/1, quick/5]).
 
 
-join(Xs,Ys) ->
-    lists:reverse(shunt(Ys,shunt(Xs,[]))).
-
-shunt([], Ys) -> Ys;
-shunt([X|Xs], Ys) ->
-    shunt(Xs, [X|Ys]).
+join([],Ys) -> Ys;
+join([X|Xs],Ys) ->
+    [X|join(Xs,Ys)].
 
 concat([]) -> [];
 concat([X|Xs]) ->
     join(X,concat(Xs)).
 
+%  tests whether its first argument is a member of its second argument, which is a list
 member(_, [])-> false;
 member(X,[X|_]) -> true;
 member(X, [_|Xs]) ->
     member(X, Xs).
 
-spl([]) -> [];
-spl([X]) -> [X];
-spl(Xs) ->
+% Merge sort: divide the list into two halves of (approximately) equal length, sort them (recursively) and then merge the results.
+
+merge_sort([]) -> [];
+merge_sort([X]) -> [X];
+merge_sort(Xs) ->
     {A,B} = lists:split(length(Xs) div 2, Xs),
-    merge(spl(A),spl(B)).
+    merge(merge_sort(A),merge_sort(B)).
 
 merge([],[]) -> [];
 merge(Xs,[]) -> Xs;
@@ -32,4 +32,20 @@ merge([X|Xs], [Y|Ys]) ->
         true -> [X| merge(Xs,[Y|Ys])];
         false -> [Y| merge([X|Xs],Ys)]
     end.
+
+quicksort([])-> [];
+quicksort([X])-> [X];
+quicksort([X|Xs]) -> 
+    {A,B, M} = quick([X|Xs], X, [], [], []),
+    quicksort(A)++ M ++ quicksort(B).
+
+
+quick([],_, A, B, M) -> {A,B, M};
+quick([X|Xs],X,A,B,M) ->quick(Xs,X, A, B, [X|M]);
+quick([X|Xs],Y,A,B,M) ->
+    case X > Y of 
+    false -> quick(Xs,Y, [X|A], B, M);
+    true -> quick(Xs,Y, A, [X|B], M)
+    end.
+
 
