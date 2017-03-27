@@ -33,6 +33,9 @@ merge([X|Xs], [Y|Ys]) ->
         false -> [Y| merge([X|Xs],Ys)]
     end.
 
+% split the list into two according to whether the items are smaller than (or equal to) or larger than the pivot,
+% often taken to be the head element of the list; sort the two halves and join the results together.
+
 quicksort([])-> [];
 quicksort([X])-> [X];
 quicksort([X|Xs]) -> 
@@ -48,6 +51,8 @@ quick([X|Xs],Y,A,B,M) ->
     true -> quick(Xs,Y, A, [X|B], M)
     end.
 
+% sort the tail of the list and then insert the head of the list in the correct place.
+
 insertionsort([X]) ->[X];
 insertionsort([X|Xs]) -> 
     insert(insertionsort(Xs),X).
@@ -58,7 +63,7 @@ insert([X|Xs], A) ->
     true -> [A|[X|Xs]];
     false -> [X| insert(Xs, A)]
     end.
-    
+
 % A permutation of a list xs consists of the same elements in a (potentially) different order. 
 perms(Xs) -> lists:reverse(perm(Xs)).
 
