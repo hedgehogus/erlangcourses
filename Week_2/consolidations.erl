@@ -1,5 +1,5 @@
 - module (consolidations).
-- export([join/2, concat/1, member/2,  merge_sort/1, merge/2, quicksort/1, quick/5]).
+- export([join/2, concat/1, member/2,  merge_sort/1, quicksort/1, insertionsort/1, insert/2]).
 
 
 join([],Ys) -> Ys;
@@ -46,6 +46,17 @@ quick([X|Xs],Y,A,B,M) ->
     case X > Y of 
     false -> quick(Xs,Y, [X|A], B, M);
     true -> quick(Xs,Y, A, [X|B], M)
+    end.
+
+insertionsort([X]) ->[X];
+insertionsort([X|Xs]) -> 
+    insert(insertionsort(Xs),X).
+    
+insert([],A)->[A];
+insert([X|Xs], A) ->
+    case A < X of
+    true -> [A|[X|Xs]];
+    false -> [X| insert(Xs, A)]
     end.
 
 
