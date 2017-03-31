@@ -1,5 +1,5 @@
 - module(result).
-- export([addOneToAll/1, addToAll/2,composed/1, sum/1, test/1]).
+- export([addOneToAll/1, addToAll/2,composed/1, sum/1, test1/1]).
 
 add(X) -> fun(Y) -> X+Y end.
 
@@ -33,10 +33,18 @@ composeList([X]) -> X;
 composeList([X|Xs]) ->
     A = composeList(Xs),
     fun (Y) -> X(A(Y)) end.
-
+% function twice that applies a function to an argument twice.
 twice(F) ->
     fun(X) ->F(F(X)) end.
 
-test(X) ->
-    A = composeList([fun fun1/1, fun fun2/1, fun fun3/1]),
+% takes a number N and returns a function that takes a function and returns that function iterated N times.
+
+iterate(X,1) -> X;
+iterate(X,N) ->
+    A = iterate(X,N-1),
+    fun(Y) -> X(A(Y)) end.
+
+
+test1(X) ->
+    A = iterate(fun(Y) -> Y+1 end, 10),
     A(X).
