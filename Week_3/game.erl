@@ -50,7 +50,7 @@ expand(stop) -> stop.
 
 % interactively play against a strategy, provided as argument.
 play() ->
-    play(fun echo/1).
+    play(fun random/1).
 
 play(Strategy) ->
     io:format("rock - paper - scissors~n"),
@@ -78,3 +78,6 @@ echo([]) -> paper;
 echo([Last|_]) -> Last.
 
 rock(_) ->rock.
+
+random(_) ->
+    enum(rand:uniform(3)-1).

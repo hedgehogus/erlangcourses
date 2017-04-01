@@ -44,6 +44,9 @@ iterate(X,N) ->
     A = iterate(X,N-1),
     fun(Y) -> X(A(Y)) end.
 
+iterate1(0) -> fun(_F) -> fun id/1 end;
+iterate1(N) -> fun(N) -> compose(F,(iterate1(N-1))(F)) end.
+
 
 test1(X) ->
     A = iterate(fun(Y) -> Y+1 end, 10),
