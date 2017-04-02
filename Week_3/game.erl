@@ -50,7 +50,7 @@ expand(stop) -> stop.
 
 % interactively play against a strategy, provided as argument.
 play() ->
-    play(fun random/1).
+    play(fun cycles/1).
 
 play(Strategy) ->
     io:format("rock - paper - scissors~n"),
@@ -81,3 +81,10 @@ rock(_) ->rock.
 
 random(_) ->
     enum(rand:uniform(3)-1).
+
+cycles(Xs) ->
+    case length(Xs) rem 3 of
+    0 -> rock;
+    1 -> paper;
+    2 -> scissors
+    end.
