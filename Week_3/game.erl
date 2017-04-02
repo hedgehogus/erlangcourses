@@ -1,5 +1,5 @@
 - module(game).
-- export([beat/1, lose/1, tournament/2, play/0, frequency/1, leastfreaquent/1, random_strategy/1]).
+- export([beat/1, lose/1, tournament/2, play/0, frequency/1, leastfreaquent/1]).
 
 % give the play which the argument beats
 beat(rock) -> paper;
@@ -50,7 +50,7 @@ expand(stop) -> stop.
 
 % interactively play against a strategy, provided as argument.
 play() ->
-    play(fun random_strategy/1).
+    play(random_strategy()).
 
 play(Strategy) ->
     io:format("rock - paper - scissors~n"),
@@ -111,7 +111,7 @@ mostfreaquent(Xs) ->
         end
     end.
 
-random_strategy(_) ->
+random_strategy() ->
     All = [fun rock/1, fun echo/1, fun random/1, fun cycles/1, fun leastfreaquent/1, fun mostfreaquent/1],
     N = rand:uniform(length(All)),
     random_strategy(All,N).
