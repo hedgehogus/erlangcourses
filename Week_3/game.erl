@@ -1,5 +1,5 @@
 - module(game).
-- export([beat/1, lose/1, tournament/2, play/0]).
+- export([beat/1, lose/1, tournament/2, play/0, frequency/1, leastfreaquent/1]).
 
 % give the play which the argument beats
 beat(rock) -> paper;
@@ -50,7 +50,7 @@ expand(stop) -> stop.
 
 % interactively play against a strategy, provided as argument.
 play() ->
-    play(fun cycles/1).
+    play(fun leastfreaquent/1).
 
 play(Strategy) ->
     io:format("rock - paper - scissors~n"),
@@ -88,3 +88,30 @@ cycles(Xs) ->
     1 -> paper;
     2 -> scissors
     end.
+
+leastfreaquent(Xs) ->
+    {R,P,S} = frequency(Xs),
+    case R<P andalso R<S of
+    true -> rock;
+    false ->
+        case P<S of
+        true -> paper;
+        false -> scissors
+        end
+    end.
+
+
+% supporting functions
+
+
+frequency(Xs) -> frequency(Xs,{0,0,0}).
+
+frequency([],A) -> A;
+frequency([X|Xs],{R,P,S}) ->
+    case X of 
+    rock -> frequency(Xs,{R+1,P,S});
+    paper -> frequency(Xs,{R,P+1,S});
+    scissors -> frequency(Xs,{R,P,S+1})
+    end.
+    
+
