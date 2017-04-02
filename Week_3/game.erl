@@ -100,6 +100,17 @@ leastfreaquent(Xs) ->
         end
     end.
 
+mostfreaquent(Xs) ->
+    {R,P,S} = frequency(Xs),
+    case R>P andalso R>S of
+    true -> rock;
+    false ->
+        case P>S of
+        true -> paper;
+        false -> scissors
+        end
+    end.
+
 
 % supporting functions
 
