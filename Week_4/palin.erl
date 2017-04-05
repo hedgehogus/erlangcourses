@@ -24,11 +24,10 @@ server(Pid) ->
     receive 
     {check, String} ->
         case palindrome(String) of
-        true -> Pid ! {result, "\"" ++ String ++ "\" is palindrome"},
-        server(Pid);
-        false -> Pid ! {result, "\"" ++ String ++ "\" is not palindrome"},
-        server(Pid)
-        end;
+        true -> Pid ! {result, "\"" ++ String ++ "\" is palindrome"};     
+        false -> Pid ! {result, "\"" ++ String ++ "\" is not palindrome"}       
+        end,
+    server(Pid);
     _ ->
         io:format("stopped ~n")        
     end.
