@@ -1,5 +1,5 @@
 -module(palin).
--export([palindrome/1]).
+-export([palindrome/1, server/1]).
 
 % palindrome problem
 %
@@ -19,6 +19,21 @@ nocaps(String) ->
         false -> Ch
         end
     end, String).
+
+server(Pid) ->
+    receive 
+    {check, String} ->
+        case palindrome(String) of
+        true -> Pid ! {result, "\"" ++ String ++ "\" is palindrome"},
+        server(Pid);
+        false -> Pid ! {result, "\"" ++ String ++ "\" is not palindrome"},
+        server(Pid)
+        end;
+    _ ->
+        io:format("stopped ~n")        
+    end.
+
+
 
 
 
