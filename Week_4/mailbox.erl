@@ -1,14 +1,15 @@
 - module (mailbox).
-- export ([test/0, receiver/0, receiver2/0, receiver3/0]).
+- export ([test/0, receiver/0, receiver2/0, receiver3/0, clear/0]).
 
 % treats different cases of incoming message at the top level of the receive statement.
 receiver() ->
     timer:sleep(800),
     receive
         stop -> io:format ("stopped~n");
-        X -> io:format ("message:~w~n", [X]),
-        receiver()
-    end.
+        X -> io:format ("message:~w~n", [X])
+        after 3000 -> clear()
+    end,
+    receiver().
 
 % matches incoming messages with a variable, and then pattern match each message using a case expression;
 receiver2() ->
@@ -33,8 +34,15 @@ receiver3() ->
     end.
     
 test() ->
-    Pid = spawn(mailbox,receiver3,[]),
+    Pid = spawn(mailbox,receiver,[]),
+    register(server,Pid),
     Pid ! {ok, Pid, self(), second},
     timer:sleep(800),
-    Pid ! {ok, Pid, self(), first},    
-    Pid ! stop.
+    Pid ! {ok, Pid, self(), first}.    
+    
+
+% flushing the mailbox
+clear() -> 
+    receive Msg -> clear()
+    after 0 -> ok
+    end.
