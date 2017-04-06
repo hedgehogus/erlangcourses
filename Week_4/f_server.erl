@@ -1,14 +1,20 @@
 - module(f_server).
-- export([start/0, init/0]).
+- export([start/0, init/0, allocate/0, deallocate/1]).
 
 allocate({[],Allocated}, _Pid) ->
     {{[], Allocated},{error, no_frequency}};
 allocate({[Freq|Free], Allocated}, Pid) ->
-    {{Free, [{Freq,Pid}|Allocated]}, {ok, Freq}}.
+    case  lists:keymember(Pid,2,Allocated)  of
+      true -> {[Freq|Free], {error, already_allocated}};
+      false -> {{Free, [{Freq, Pid}|Allocated]}, {ok, Freq}}
+    end.
 
 deallocate ({Free, Allocated}, Freq) ->
-    NewAllocated = lists:keydelete(Freq, 1, Allocated),
-    {[Freq|Free], NewAllocated}.
+    case lists:keymember(Freq, 1,Allocated) of
+        true -> NewAllocated = lists:keydelete(Freq, 1, Allocated),
+         {{[Freq|Free], NewAllocated}, ok};
+        false -> {{[Free],Allocated}, not_currently_using}
+    end.
 
 loop (Frequencies) ->
     receive
@@ -17,8 +23,8 @@ loop (Frequencies) ->
         Pid ! {reply,Reply},
         loop(NewFrequancies);
     {request, Pid, {deallocate, Freq}} ->
-        NewFrequancies = deallocate(Frequencies, Freq),
-        Pid ! {reply, ok},
+        {NewFrequancies, Reply} = deallocate(Frequencies, Freq),
+        Pid ! {reply, Reply},
         loop (NewFrequancies);
     {request, Pid, stopped} ->
         Pid ! {reply, stopped}
@@ -29,9 +35,24 @@ init() ->
     loop(Frequencies).
 
 % hard coded
-
 get_frequencies() -> [10,11,12,13,14,15].
 
 start()->
     Server = spawn(f_server, init, []),
-    register(serv, Server).
+    register(f_server, Server).
+
+
+allocate() -> 
+    f_server ! {request, self(), allocate},
+    receive
+        {reply, Reply} -> Reply
+    end.
+
+deallocate(Freq) ->
+    f_server ! {request, self(), {deallocate,Freq}},
+    receive
+        {reply, Reply} -> Reply
+    end.
+
+stop() ->
+    f_server ! {request,self(), stopped}.
