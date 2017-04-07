@@ -46,6 +46,7 @@ loop(Frequencies) ->
 test() -> 
     io:format ("message:~w~n", [allocate()]).    
 
+%% Adding timeouts to the client code
 allocate() -> 
     frequency ! {request, self(), allocate},   
     receive 
@@ -57,7 +58,7 @@ deallocate(Freq) ->
     frequency ! {request, self(), {deallocate, Freq}},
     receive 
 	    {reply, Reply} -> Reply
-    after 500 -> deallocate(Freq)
+    after 500 -> clear()
     end.
 
 stop() -> 
