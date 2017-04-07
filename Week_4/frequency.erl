@@ -48,17 +48,19 @@ test() ->
 
 %% Adding timeouts to the client code
 allocate() -> 
+    clear()
     frequency ! {request, self(), allocate},   
     receive 
 	    {reply, Reply} -> Reply
-    after 500 -> clear()
+    after 500 -> {error, timeout}
     end.
 
 deallocate(Freq) -> 
+    clear()
     frequency ! {request, self(), {deallocate, Freq}},
     receive 
 	    {reply, Reply} -> Reply
-    after 500 -> clear()
+    after 500 -> {error, timeout}
     end.
 
 stop() -> 
