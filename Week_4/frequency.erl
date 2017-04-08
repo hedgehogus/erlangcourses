@@ -48,7 +48,7 @@ test() ->
 
 %% Adding timeouts to the client code
 allocate() -> 
-    clear()
+    clear(),
     frequency ! {request, self(), allocate},   
     receive 
 	    {reply, Reply} -> Reply
