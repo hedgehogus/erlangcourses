@@ -12,6 +12,7 @@ init() ->
 loop() ->
     receive
         {request, From, Expr} ->
+        % expr:eval(Expr) - doesn't work, but illustrates client-server structure
             From ! {reply, expr:eval(Expr)},
             loop();
         stop ->
