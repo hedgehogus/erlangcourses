@@ -7,11 +7,14 @@ start() ->
 
 % spawn and link process
 start2() ->
-    register(first,spawn_link(?MODULE, loop4, [])).
+    register(first,spawn_link(?MODULE, loop, [])).
 
 % never terminates
 loop() -> 
     receive
+        {msg, exit} -> exit(fir),
+            io:format("ack~n"),
+            loop();
         {msg, M} ->
             io:format("ack~n"),
             loop();
