@@ -1,5 +1,5 @@
 -module(frequency).
--export([start/0,allocate/0,deallocate/1,stop/0, clear/0, test/0]).
+-export([start/0,allocate/0, deallocate/1, stop/0, clear/0, test/0]).
 -export([init/0]).
 
 %% These are the start functions used to create and
@@ -31,7 +31,7 @@ loop(Frequencies) ->
       NewFrequencies = deallocate(Frequencies, Freq),
       Pid ! {reply, ok},
       loop(NewFrequencies);
-    % receives error message
+    % receives exit message
     {'EXIT', Pid, _Reason} ->
         NewFrequencies = exited(Frequencies, Pid),
         loop(NewFrequencies);
@@ -47,7 +47,8 @@ test() ->
 %% Adding timeouts to the client code
 allocate() -> 
     clear(),
-    frequency ! {request, self(), allocate},   
+    frequency ! {request, self(), allocate},  
+    io:format ("message:~w~n", [self()]), 
     receive 
 	    {reply, Reply} -> Reply
     after 500 -> {error, timeout}
