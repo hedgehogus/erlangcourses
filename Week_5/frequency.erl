@@ -1,5 +1,5 @@
 -module(frequency).
--export([start/0,allocate/0, deallocate/1, stop/0, clear/0, test/0]).
+-export([start/0,allocate/0, deallocate/1, stop/0, clear/0, test/0, crashserver/1]).
 -export([init/0]).
 
 %% These are the start functions used to create and
@@ -20,24 +20,31 @@ get_frequencies() -> [10,11,12,13,14,15].
 
 %% The Main Loop
 %% simulating the frequency server being overloaded
-loop(Frequencies) ->
-  timer:sleep(2000),
-  receive
+loop(Frequencies) ->   
+    timer:sleep(crashserver(Frequencies)),   
+    receive
     {request, Pid, allocate} ->
-      {NewFrequencies, Reply} = allocate(Frequencies, Pid),
-      Pid ! {reply, Reply},
-      loop(NewFrequencies);
+        {NewFrequencies, Reply} = allocate(Frequencies, Pid),
+        Pid ! {reply, Reply},
+        loop(NewFrequencies);
     {request, Pid , {deallocate, Freq}} ->
-      NewFrequencies = deallocate(Frequencies, Freq),
-      Pid ! {reply, ok},
-      loop(NewFrequencies);
+        NewFrequencies = deallocate(Frequencies, Freq),
+        Pid ! {reply, ok},
+        loop(NewFrequencies);
     % receives exit message
     {'EXIT', Pid, _Reason} ->
         NewFrequencies = exited(Frequencies, Pid),
         loop(NewFrequencies);
     {request, Pid, stop} ->
-      Pid ! {reply, stopped}
+        Pid ! {reply, stopped}
   end.
+
+crashserver({S, _}) ->
+    case (length(S) > 2) of
+        true -> 100;
+        false -> exit(crash)
+    end.
+
 
 %% Functional interface
 

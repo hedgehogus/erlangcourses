@@ -16,6 +16,6 @@ allocate() ->
 
 loop() -> 
     timer:sleep(6000),
-    io:format ("message:~w~n", [{terminate}]),
-    exit(crash),
+     %  io:format ("message:~w~n", [{terminate}]),
+     % exit(crash),
     loop().
