@@ -1,5 +1,5 @@
 - module(assignment).
-- export([test/0, deallocate/1, start/0]).
+- export([test/0, deallocate/1, start/0, stop/1]).
 - export([allocate/1, init_server/0, init_supervisor/0]).
 
 % adding a supervisor
@@ -15,16 +15,22 @@ init_supervisor() ->
     
     supervisor_loop([Pid1,Pid2]).
 
+supervisor_loop([null,null]) -> io:format("supervisor stopped");
 supervisor_loop([Pid1,Pid2]) ->
     receive    
+        {'EXIT', Pid1, normal} ->
+            supervisor_loop([null,Pid2]);
+        {'EXIT', Pid2, normal} ->
+            supervisor_loop([Pid1,null]);
         {'EXIT', Pid1, _Reason} ->
-            io:format("restart frequency1"),
+            io:format("restart frequency1~n"),
             register(frequency1, A = spawn_link(assignment, init_server, [])),
             supervisor_loop([A,Pid2]);
         {'EXIT', Pid2, _Reason} ->
-            io:format("restart frequency2"),
+            io:format("restart frequency2~n"),
             register(frequency2, A = spawn_link(assignment, init_server, [])),
-            supervisor_loop([Pid1,A])
+            supervisor_loop([Pid1,A]);
+        crash -> exit(killed)
     end.
 
 init_server() ->
@@ -35,6 +41,7 @@ init_server() ->
 get_frequencies() -> [10,11,12,13,14,15].
 
 loop(Frequencies) ->   
+    SupervisorPid = whereis(supervisor),
     receive
     {request, Pid, allocate} ->
         {NewFrequencies, Reply} = allocate(Frequencies, Pid),
@@ -45,9 +52,11 @@ loop(Frequencies) ->
         Pid ! {reply, ok},
         loop(NewFrequencies);
     % receives exit message
+    {'EXIT', SupervisorPid, _Reason} ->
+       stopped;      
     {'EXIT', Pid, _Reason} ->
         NewFrequencies = exited(Frequencies, Pid),
-        loop(NewFrequencies);
+        loop(NewFrequencies);        
     crash -> exit(killed);
     {request, Pid, stop} ->
         Pid ! {reply, stopped}
@@ -77,6 +86,12 @@ deallocate(Freq) ->
 loop1() -> 
     timer:sleep(1000),
     loop1().
+
+stop(Name) -> 
+    Name ! {request, self(), stop},
+    receive 
+	    {reply, Reply} -> Reply
+    end.
 
 %% The Internal Help Functions used to allocate and
 %% deallocate frequencies.
