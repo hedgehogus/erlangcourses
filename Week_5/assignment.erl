@@ -1,5 +1,5 @@
 - module(assignment).
-- export([test/0, deallocate/1, start/0, stop/1]).
+- export([test/1, deallocate/1, start/0, stop/1]).
 - export([allocate/1, init_server/0, init_supervisor/0]).
 
 % adding a supervisor
@@ -48,9 +48,14 @@ loop(Frequencies) ->
         Pid ! {reply, Reply},
         loop(NewFrequencies);
     {request, Pid , {deallocate, Freq}} ->
-        NewFrequencies = deallocate(Frequencies, Freq),
-        Pid ! {reply, ok},
-        loop(NewFrequencies);
+        try deallocate(Frequencies, Freq) of
+            NewFrequencies -> Pid ! {reply, ok}, 
+            loop(NewFrequencies)
+        catch throw:not_allocated ->            
+            Pid ! {reply, not_ok},
+            loop(Frequencies)
+        end;
+        
     % receives exit message
     {'EXIT', SupervisorPid, _Reason} ->
        stopped;      
@@ -64,28 +69,36 @@ loop(Frequencies) ->
 
 %% Functional interface
 
-test() -> 
-    spawn(assignment,allocate, [frequency1]),
-    spawn(assignment,allocate, [frequency2]).
+test(N) -> 
+    case N of 
+        1 -> spawn(assignment,allocate, [frequency1]);
+        2 -> spawn(assignment,allocate, [frequency2])
+    end.
 
 allocate(Pid) -> 
-    Pid ! {request, self(), allocate},  
-    io:format ("client Pid:~w~n~w~n", [self(), Pid]), 
+    Pid ! {request, self(), allocate}, 
+    
     receive 
 	    {reply, Reply} -> Reply,
+        io:format ("client Pid:~w~w~n", [self(), Reply]), 
         loop1()    
     end.
 
-deallocate(Freq) ->    
-    frequency1 ! {request, self(), {deallocate, Freq}},
+deallocate({Freq, N}) ->    
+    case N of 
+        1 -> frequency1 ! {request, self(), {deallocate, Freq}};
+        2 -> frequency2 ! {request, self(), {deallocate, Freq}}
+    end,
     receive 
 	    {reply, Reply} -> Reply,
-        loop1()
+        io:format ("deallocated:~w~w~n", [self(), Reply])        
     end.
 
 loop1() -> 
     timer:sleep(1000),
-    loop1().
+    deallocate({11,1}),
+    timer:sleep(1000).
+    %loop1().
 
 stop(Name) -> 
     Name ! {request, self(), stop},
@@ -103,10 +116,12 @@ allocate({[Freq|Free], Allocated}, Pid) ->
     {{Free, [{Freq, Pid}|Allocated]}, {ok, Freq}}.
 
 deallocate({Free, Allocated}, Freq) ->
-    {value, {Freq, Pid}} = lists:keysearch(Freq,1, Allocated),
-    unlink(Pid),
-    NewAllocated = lists:keydelete(Freq, 1, Allocated),
-    {{[Freq|Free], NewAllocated}, ok}.
+    case lists:keysearch(Freq,1, Allocated) of
+      {value, {Freq, Pid}} -> unlink(Pid),
+          NewAllocated = lists:keydelete(Freq, 1, Allocated),
+          {{[Freq|Free], NewAllocated}, ok};
+      _Resp -> throw(not_allocated)
+    end.
 
 % handling the exit in the server
 exited ({Free, Allocated}, Pid) ->
