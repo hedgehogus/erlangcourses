@@ -1,0 +1,37 @@
+OTP Master Class
+
+This activity continues our exploration of OTP, with selected parts of an online OTP Master Class 
+presented by Francesco Cesarini, founder and Technical Director of Erlang Solutions.
+
+
+3.13
+
+Client-servers  View 4 comments
+The videos in this activity were first produced as part of an Erlang Master Class 
+series developed at the University of Kent. The full Master Classes are not core to this course, 
+but if you are interested you can view the whole Master Class series via the University of Kent’s School of Computing web pages.
+
+In this first video, Francesco begins by looking at OTP behaviours. 
+To understand these, we need to understand the patterns of Erlang-based client-server architectures.
+
+
+3.14
+
+Why OTP?  View 1 comment
+OTP behaviours will help you avoid accidental complexity, hiding some of the trickier 
+parts of concurrent programming and handling them for you behind the scenes.
+
+In this video, Francesco considers the importance of abstracting message passing, looks at race
+conditions in concurrent systems, and outlines a safe approach to sending and receiving requests.
+
+
+3.15
+
+Supervisors  View 1 comment
+In this video, Francesco explores the way in which systems can go wrong, 
+and uses this as motivation for the idea of supervisors and supervision trees.
+
+He concludes by discussing what aspects of supervision are generic, and what are 
+specific, and this underpins the OTP definition of the supervisor behaviour.
+
+
