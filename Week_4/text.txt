@@ -1,0 +1,63 @@
+2.21
+
+Hot code loading  
+
+Now we’ll look at how running programs can be upgraded without taking the system down. 
+This hot code loading contributes to Erlang’s ‘six nines’ - 99.9999% - availability.
+
+We’ll introduce the model for two versions of code to be loaded simultaneously, and the cues for re-loading code.
+
+In the next step, we’ll try this out in our frequency server example, 
+before finishing with a summary of the key lessons and insights from this week.
+
+
+2.22 
+
+Upgrading the frequency server  
+
+In this exercise we’ll run through an example of hot code upgrade, applied to the frequency server.
+
+Use the comments on this step to share your approaches to this exercise, 
+any difficulties you encounter or questions you may have, and your solutions.
+
+The supporting file frequency2.erl is available (as a zip file) under ‘Downloads’ below.
+
+Injecting new frequencies
+In our frequency server example, the set of frequencies available is hard-wired in the code. 
+It is required to add a new functionality to the server, to inject a list of frequencies 
+into the server for future use (in addition to the ones already available).
+
+You should build a new version of the frequency.erl module that:
+
+can receive messages of the form {request, Pid, {inject, Freqs}}, where Freqs is a list of numbers;
+can process this message by a function inject/2 (defined in a similar way to the allocate and deallocate functions);
+provides a function inject/1 which gives a functional interface for the client to initiate an injection of frequencies.
+Testing the modification
+Run your frequency server from the Erlang shell and check that it has the behaviour you would expect. This would always 
+be a preliminary to upgrading in running system: check that your upgrade behaves properly before you make it live!
+
+Supporting live upgrade
+We’ll work through the live upgrade of a running frequency server in a series of steps.
+
+As it stands the frequency server code cannot be upgraded live. Modify the (old) code so that it is susceptible to upgrade.
+Run the server from the Erlang shell, and call allocate/1 repeatedly to allocate frequencies until there are none remaining.
+Compile the modified frequency module that includes inject functionality, and call code:load_file(frequency) to ensure that it is loaded.
+Call the function code:soft_purge(frequency) – does it do what you would expect?
+Call inject/1 with a suitable argument to inject a set of new frequencies in the running server, and then call allocate/1 to see the effect of the upgrade.
+Discussion
+You might like to use the discussion attached to this page to talk about other ways that hot code loading 
+could be used in the frequency server case study, and the precautions that you would need to take to ensure 
+that these upgrades worked without breaking the system.
+
+
+2. 23
+
+Making code robust  
+
+To finish this week, let’s recap and pull together the key lessons and insights of the week.
+
+You might like to use the comments on this step to discuss your thoughts on and experience of making Erlang code robust,
+ or any other questions that this week has brought up.
+
+We will also provide more specific feedback, based on your questions and contributions across this week’s comments, and addressing 
+any common questions or themes that emerge during the week. Here’s the link.(https://www.youtube.com/watch?v=0J8DCxFoqOs&feature=youtu.be)
