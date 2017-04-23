@@ -1,0 +1,77 @@
+What's next?
+
+We're now coming to the end of our course in concurrent programming in Erlang. What's next?
+
+
+3.16
+
+Other features of Erlang  
+Here we’ll consider some other features of Erlang that we’ve not covered in detail.
+
+The four things we’re going to look at are:
+
+- Macros
+- Records
+- Maps
+- Binaries
+We only cover these briefly, with quick examples, but if you want to find out more it’s
+all in the online documentation. You could use the comments on this step to discuss 
+how these four features might be useful for your Erlang programming.
+
+
+3.17
+
+The Erlang tool ecosystem  
+In this step, Simon gives a lightning overview of some of the tools that are used by Erlang developers.
+
+Some of the tools come “in the box” as part of the Erlang distribution, while others are available separately, 
+usually as open source distributions. Simon also mentions two texts which cover OTP in more detail, 
+as well as looking at some editors for Erlang programs.
+
+
+3.18 - QUIZ
+
+
+3.19
+
+Francesco, Joe and Simon: Erlang/OTP now and in the future  
+In this video, Francesco, Joe and Simon discuss Erlang and OTP as they are used currently, and how they might evolve in the future.
+
+The discussion begins with Francesco explaining that OTP is at the heart of nearly all real-world Erlang applications, 
+because of the amount of work that it does for programmers “out of the box”. The discussion moves into how systems scale, 
+and the role of OTP in helping (or perhaps not helping) this to be done. They conclude by looking at how the Erlang ecosystem 
+might develop over the coming five to ten years.
+
+
+3.20 - TEST
+
+
+3.21
+
+Coming to the end  
+
+In this final video Simon wraps up the course, and summarises it in four key messages
+
+- functional at the core
+- share-nothing processes
+- let it fail!
+- scale it up
+and summarises the elegant and effective design decisions underlying the language.
+
+He points the way for other things to do, including
+
+- further reading in a selection of books and websites,
+- other systems to look at, such as elixir and akka
+- other projects to follow, calling on the twittersphere for some suggestions.
+
+We will also provide more specific feedback, based on your questions and contributions across 
+this week’s comments, and addressing any common questions or themes that emerge during the week or across the course as a whole. 
+The video is here. -> https://www.youtube.com/watch?v=wBm5OXSJksw
+
+We do hope you’ve enjoyed the course, and will continue to explore Erlang and OTP. Happy programming!
+
+Post-course survey
+We’d like to ask you some questions about your experience on the course, to help us keep improving. 
+We hope that you’ll also find it useful to reflect on your experience on the course. Please complete the post-course survey.
+
+The survey should take around 10 minutes to complete. We really appreciate all your feedback.
