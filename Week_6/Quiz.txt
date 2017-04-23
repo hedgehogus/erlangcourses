@@ -1,0 +1,128 @@
+QUIZ
+
+
+1. When receiving a message via the receive construct, what happens if none of the clauses matches the incoming message?
+
+- The receiver process will crash due to a case_clause error
+
+- The very last clause will be matched (the last clause is always a “catch all” clause)
+
+- The message will be kept in the mailbox of the process and any messages received subsequently will be pattern-matched against the clauses.
+
+- The message will be removed from the mailbox.
+
+
+
+2. What is the effect of typing
+
+receive X -> X end.
+
+to the erl prompt, assuming that the following interaction as already taken place:
+
+1> self() ! hello.
+hello
+2> receive X -> X end.
+hello
+3> self() ! goodbye.
+goodbye
+
+- The program prints hello.
+
+- The program hangs.
+
+- The program prints goodbye.
+
+- The program crashes.
+
+
+
+3. We want to spawn the function m:f/1 with the argument a. Which of the following function calls is the correct one?
+
+- spawn(m, f, [a])
+
+- spawn({m, f, a})
+
+- spawn(m, f, a)
+
+- spawn(fun() -> {m, f, a}end)
+
+
+
+4. Which of the following statements concerning trapping exits are false?
+
+
+- When a process P is not trapping exits and a process Q linked to it terminates, it will terminate too, independently of the reason for termination of Q.
+
+- A process can be set to trap exit signals by calling process_flag(trap_exit, true).
+
+- When a process is trapping exits, it will not always terminate when an exit signal is received.
+
+
+
+5. Code is loaded in the run time system by:
+
+
+- Explicitly loading it using code:load_file(Module).
+
+- Calling a function in a module which is not already compiled.
+
+- Calling a function in a module which is not already loaded.
+
+- Calling the shell function c to compile the module.
+
+
+
+
+
+1. 
+
+- NO. No, that’s not correct: it is not an error for none of the clauses to match a message.
+
+- No, that’s not correct in general, even though in many cases a programmer will choose to make the last clause a “catch all”.
+
+- Yes, that’s correct.
+
+- No, the message will remain in the mailbox, and may be processed by a receive executed later in the execution.
+
+
+2. 
+
+- No, that would happen if we were to evaluate X at the prompt.
+
+- Yes, that’s right: X is already bound to hello and so there is no match for the message goodbye in that receive statement.
+
+- No, this is not correct, because X is already bound. This would be correct if we were to evaluate
+receive Y -> Y.
+
+- No, this will not happen: nothing has failed.
+
+
+3.
+
+- Yes, that’s correct.
+
+- No, though there is a one-argument version of spawn it takes a function, not a tuple.
+
+- No! This is a common error to make, particularly if a is a list itself.
+
+- No. It is possible to spawn a function, but this needs to have as its body the code to be executed by the process.
+
+
+4. 
+
+- correct
+
+- This is a correct statement, so an incorrect answer to the question.
+
+- This is a correct statement, so an incorrect answer to the question.
+  No this is true because a process will not terminate unless the exit reason is kill.
+
+
+5. 
+
+- Partially correct 
+- No, loading does not cause modules to be compiled; this must be done explicitly.
+- Yes, this has the result of loading a module.
+- Yes, calling the shell compile function has the effect of loading the module.
+
+
