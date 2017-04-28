@@ -11,8 +11,7 @@ start() ->
     register(frequency2,
 	    spawn(frequency, init, [fun get_frequencies2/0])),
     register(router,
-        spawn(frequency, init_router, [])).
-    
+        spawn(frequency, init_router, [])).   
 
 init_router() ->
     loop_router().
