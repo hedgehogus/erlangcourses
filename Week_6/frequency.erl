@@ -1,49 +1,86 @@
 -module(frequency).
--export([start/0,allocate/0, deallocate/1, stop/0, clear/0, test/0, crashserver/1]).
--export([init/0]).
+-export([start/0,allocate/0, deallocate/1, stop/0, test/0]).
+-export([init/1, init_router/0]).
 
 %% These are the start functions used to create and
 %% initialize the server.
 
-start() ->
-    register(frequency,
-	     spawn(frequency, init, [])).
+start() ->   
+    register(frequency1,
+	    spawn(frequency, init, [fun get_frequencies1/0])),
+    register(frequency2,
+	    spawn(frequency, init, [fun get_frequencies2/0])),
+    register(router,
+        spawn(frequency, init_router, [])).
+    
 
-init() ->
+init_router() ->
+    loop_router().
+
+loop_router() ->
+    A1 = get_free(frequency1),
+    A2 = get_free(frequency2),
+    receive
+        {request, Pid, allocate} ->        
+            case A1>=A2 of 
+                true -> frequency1 ! {request, Pid, allocate};               
+                false -> frequency2 ! {request, Pid, allocate}
+            end,
+            loop_router();
+        {request, Pid , {deallocate, Freq}} ->
+            case lists:member(Freq, get_frequencies1()) of
+                true -> frequency1 ! {request, Pid , {deallocate, Freq}};
+                false -> 
+                    case lists:member(Freq, get_frequencies2()) of 
+                    true -> frequency2 ! {request, Pid , {deallocate, Freq}};
+                    false -> Pid ! {reply,no_frequency}
+                    end
+            end,
+            loop_router()
+    end.
+
+get_free(S) ->
+    S ! {request, self(), get_free},
+    receive
+      {reply, L} -> L
+    end.
+
+
+
+init(F) ->
     %firewall
     process_flag(trap_exit, true),
-    Frequencies = {get_frequencies(), []},
+    Frequencies = {F(), []},
     loop(Frequencies).
 
 % Hard Coded
-get_frequencies() -> [10,11,12,13,14,15].
+get_frequencies1() -> [10,11,12,13,14,15].
+get_frequencies2() -> [20,21,22,23,24,25].
 
 %% The Main Loop
-%% simulating the frequency server being overloaded
+
 loop(Frequencies) ->   
-    timer:sleep(crashserver(Frequencies)),   
+    Router_Pid = whereis(router), 
     receive
     {request, Pid, allocate} ->
         {NewFrequencies, Reply} = allocate(Frequencies, Pid),
         Pid ! {reply, Reply},
         loop(NewFrequencies);
     {request, Pid , {deallocate, Freq}} ->
-        NewFrequencies = deallocate(Frequencies, Freq),
-        Pid ! {reply, ok},
-        loop(NewFrequencies);
-    % receives exit message
+        {NewFrequencies, Reply} = deallocate(Frequencies, Freq),
+        io:format("dealoc ~w~n", [{NewFrequencies}]),
+        Pid ! {reply, Reply},
+        loop(NewFrequencies);   
     {'EXIT', Pid, _Reason} ->
         NewFrequencies = exited(Frequencies, Pid),
         loop(NewFrequencies);
     {request, Pid, stop} ->
-        Pid ! {reply, stopped}
+        Pid ! {reply, stopped};
+    {request, Router_Pid, get_free} ->
+        {Free, _} = Frequencies,
+        Router_Pid ! {reply, length(Free)},
+        loop(Frequencies)
   end.
-
-crashserver({S, _}) ->
-    case (length(S) > 2) of
-        true -> 100;
-        false -> exit(crash)
-    end.
 
 
 %% Functional interface
@@ -51,47 +88,38 @@ crashserver({S, _}) ->
 test() -> 
     io:format ("message:~w~n", [allocate()]).    
 
-%% Adding timeouts to the client code
-allocate() -> 
-    clear(),
-    frequency ! {request, self(), allocate},  
+allocate() ->     
+    router ! {request, self(), allocate},  
     io:format ("message:~w~n", [self()]), 
     receive 
-	    {reply, Reply} -> Reply
-    after 500 -> {error, timeout}
+	    {reply, Reply} -> Reply    
     end.
 
-deallocate(Freq) -> 
-    clear(),
-    frequency ! {request, self(), {deallocate, Freq}},
+deallocate(Freq) ->     
+    router ! {request, self(), {deallocate, Freq}},
     receive 
-	    {reply, Reply} -> Reply
-    after 500 -> {error, timeout}
+	    {reply, Reply} -> Reply  
     end.
 
 stop() -> 
-    frequency ! {request, self(), stop},
+    router ! {request, self(), stop},
     receive 
 	    {reply, Reply} -> Reply
     end.
 
 
-%% The Internal Help Functions used to allocate and
-%% deallocate frequencies.
 
 allocate({[], Allocated}, _Pid) ->
-  {{[], Allocated}, {error, no_frequency}};
-allocate({[Freq|Free], Allocated}, Pid) ->
-    % link to the Pid that has got that frequency
-    link(Pid),
+    {{[], Allocated}, {error, no_frequency}};
+allocate({[Freq|Free], Allocated}, Pid) ->   
     {{Free, [{Freq, Pid}|Allocated]}, {ok, Freq}}.
 
-deallocate({Free, Allocated}, Freq) ->
-    {value, {Freq, Pid}} = lists:keysearch(Freq,1, Allocated),
-    % unlink to the Pid that holds it
-    unlink(Pid),
-    NewAllocated = lists:keydelete(Freq, 1, Allocated),
-    {{[Freq|Free], NewAllocated}, ok}.
+deallocate({Free, Allocated}, Freq) ->     
+    case lists:keysearch(Freq,1,Allocated) of
+    false -> {{Free, Allocated}, not_ok};
+    _ ->  NewAllocated = lists:keydelete(Freq, 1, Allocated),
+         {{[Freq|Free], NewAllocated}, ok}
+    end.
 
 % handling the exit in the server
 exited ({Free, Allocated}, Pid) ->
@@ -103,10 +131,3 @@ exited ({Free, Allocated}, Pid) ->
             {Free, Allocated}
         end.
 
-% flushing the mailbox
-clear() ->
-  receive 
-    Msg -> io:format ("clear message:~w~n", [Msg]),
-    clear()
-    after 0 -> ok
-  end.
