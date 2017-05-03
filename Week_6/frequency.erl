@@ -53,8 +53,8 @@ init(F) ->
     loop(Frequencies).
 
 % Hard Coded
-get_frequencies1() -> [10,11,12,13,14,15,16].
-get_frequencies2() -> [20,21,22,23,24,25,26].
+get_frequencies1() -> [10,11,12,13,14,15].
+get_frequencies2() -> [20,21,22,23,24,25].
 
 %% The Main Loop
 
