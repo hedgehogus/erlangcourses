@@ -13,9 +13,9 @@ loop(Mod, State) ->
     end.
 
 
-rpc(Query) ->
+rpc(Mod,Query) ->
     Tag = make_ref(),
-    counter0 ! {self(), Tag, Query},
+    Mod ! {self(), Tag, Query},
     receive
         {Tag, Reply} -> Reply
     end.
