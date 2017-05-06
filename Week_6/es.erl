@@ -6,6 +6,8 @@
 %% gen_server callbacks
 - export([init/1, handle_call/3, handle_cast/2]).
 
+- define(SERVER, ?MODULE).
+
 init([]) -> {ok,0}.
 
 handle_call(count, _From, State) -> {reply, State, State};
