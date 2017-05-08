@@ -6,7 +6,7 @@
 %%   http://www.erlangprogramming.org/
 %%   (c) Francesco Cesarini and Simon Thompson
 
--module(frequency).
+-module(frequency2).
 -export([start/0,allocate/0,deallocate/1,stop/0]).
 -export([init/0]).
 
@@ -15,7 +15,7 @@
 
 start() ->
     register(frequency,
-	     spawn(frequency, init, [])).
+	     spawn(frequency2, init, [])).
 
 init() ->
   Frequencies = {get_frequencies(), []},

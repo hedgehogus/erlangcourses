@@ -39,23 +39,24 @@ get_frequencies() -> [10,11,12,13,14,15].
 %% Functional interface
 
 allocate() -> 
-    'for you to do'.
+    gen_server:call(?MODULE, allocate).
 
 deallocate(Freq) -> 
-    'for you to do'.
+    gen_server:cast(?MODULE, {deallocate,Freq}).
 
+% alternative approach in frequensy_gen_server file
 stop() ->  
-    'for you to do'.  
+    gen_server:stop(?MODULE).
 
-handle_call(message, From, State) ->
-    'for you to do'.
+handle_call(allocate, From, State) ->
+    {NewFrequencies, Reply} = allocate(State,From),
+    {reply, Reply, NewFrequencies}.
 
-handle_cast(message, State) ->
-  'for you to do';  
+handle_cast({deallocate, Freq}, State) ->
+    NewFrequencies = deallocate(State, Freq),
+    {noreply, NewFrequencies}.
   
-handle_cast(stop, State) ->
-  'for you to do'.    
-  
+
 
 %% The Internal Help Functions used to allocate and
 %% deallocate frequencies.
