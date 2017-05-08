@@ -6,7 +6,7 @@
 %%   http://www.erlangprogramming.org/
 %%   (c) Francesco Cesarini and Simon Thompson
 
--module(frequency).
+-module(frequency_gen_server).
 -behaviour(gen_server).
 
 % an implementation of this is included.
