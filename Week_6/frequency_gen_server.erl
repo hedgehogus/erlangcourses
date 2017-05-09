@@ -41,11 +41,11 @@ get_frequencies() -> [10,11,12,13,14,15].
 allocate() -> 
     gen_server:call(?MODULE,allocate).
 
-deallocate(Freq) -> 
+deallocate(Freq) ->  
     gen_server:cast(?MODULE,{deallocate,Freq}).
 
 stop() ->  
-    gen_server:cast(?MODULE,stop).  
+    gen_server:cast(?MODULE,stop).   
 
 handle_call(allocate, From, State) ->
     {NewState, Reply} = allocate(State,From),
