@@ -6,6 +6,7 @@ We're now coming to the end of our course in concurrent programming in Erlang. W
 3.16
 
 Other features of Erlang  
+
 Here we’ll consider some other features of Erlang that we’ve not covered in detail.
 
 The four things we’re going to look at are:
