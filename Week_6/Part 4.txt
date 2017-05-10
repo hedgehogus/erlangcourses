@@ -15,6 +15,7 @@ The four things we’re going to look at are:
 - Records
 - Maps
 - Binaries
+
 We only cover these briefly, with quick examples, but if you want to find out more it’s
 all in the online documentation. You could use the comments on this step to discuss 
 how these four features might be useful for your Erlang programming.
